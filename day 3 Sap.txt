@@ -1,0 +1,138 @@
+import warnings
+
+warnings.filterwarnings("ignore")
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
+
+
+
+https://raw.githubusercontent.com/Code-Unnati/Advance-Course/master/Module-1/Unit-2/Unit-2.2/ChurnData.csv
+
+
+
+
+
+import pandas as pd
+
+from matplotlib import pyplot as plt
+
+import numpy as np
+
+from sklearn.linear_model import LogisticRegression
+
+
+
+churn_df = pd.read_csv("https://raw.githubusercontent.com/Code-Unnati/Advance-Course/master/Module-1/Unit-2/Unit-2.2/ChurnData.csv")
+
+churn_df
+
+
+
+
+
+print(churn_df.info())
+
+print('\n')
+
+print(churn_df.describe())
+
+
+
+
+
+churn_df = churn_df[['tenure', 'age', 'address', 'income', 'ed', 'employ', 'equip',  'callcard', 'wireless','churn']]
+
+churn_df['churn']=churn_df['churn'].astype('int')
+
+print(churn_df.shape)
+
+churn_df.head()
+
+
+
+X=churn_df[['tenure', 'age', 'address', 'income', 'ed', 'employ', 'equip', 'callcard', 'wireless']]
+
+#X=X.drop(['tenure'],axis=1)
+
+Y=churn_df[['churn']]
+
+np_X=np.asanyarray(X)
+
+np_Y=np.asanyarray(Y)
+
+
+
+
+
+from sklearn.preprocessing import StandardScaler ### Preprocess the data
+
+std_scl=StandardScaler()
+
+std_scl.fit(np_X)
+
+np_X_procs=std_scl.transform(np_X)
+
+
+
+
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, Y_train, Y_test = train_test_split(np_X_procs, np_Y, test_size=0.2, random_state=4)
+
+print ('Train set:', X_train.shape, Y_train.shape)
+
+print ('Test set:', X_test.shape, Y_test.shape)
+
+
+
+
+
+model=LogisticRegression(C=0.01,solver='liblinear',verbose=1)
+
+model.fit(X_train,Y_train)
+
+Y_pred=model.predict(X_test)
+
+
+
+
+
+Y_pred=model.predict(X_test)
+
+Y_pred_prob=model.predict_proba(X_test)
+
+print(Y_pred)
+
+print('\n')
+
+print((Y_pred_prob))
+
+
+
+
+
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+
+print("Model achieved a classification accuracy of:",end='\t')
+
+print(accuracy_score(Y_test,Y_pred))
+
+dsp=ConfusionMatrixDisplay(confusion_matrix(Y_test,Y_pred),display_labels=["Yes","No"])
+
+print('\n')
+
+dsp.plot()
+
+print("Model Confusion Matrix")
+
+from sklearn.metrics import jaccard_score
+
+print('\n')
+
+print("Jaccard Similarity Score:", end='\t')
+
+print(jaccard_score(Y_test,Y_pred))
+
